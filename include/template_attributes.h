@@ -27,9 +27,10 @@
  * catching mismatches like `%d` against a `char *` argument at compile
  * time.
  *
- * @code
+ * Example:
+ * ```
  * void LogInfo(const char *fmt, ...) TEMPLATE_PRINTF(1, 2);
- * @endcode
+ * ```
  */
 #define TEMPLATE_PRINTF(fmtIndex, argIndex) __attribute__((format(printf, fmtIndex, argIndex)))
 
