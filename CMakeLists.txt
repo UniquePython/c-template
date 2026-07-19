@@ -66,6 +66,31 @@ target_link_options(template PRIVATE
     >
 )
 
+target_compile_definitions(template PRIVATE
+    $<$<CONFIG:Release>:VERBOSITY=6>
+)
+
+target_compile_options(template PRIVATE
+    $<$<CONFIG:Dev>:
+        -Og
+        -g
+        -fanalyzer
+        -fstack-protector-strong
+        -fno-omit-frame-pointer
+        -fsanitize=address,undefined,leak
+    >
+)
+
+target_link_options(template PRIVATE
+    $<$<CONFIG:Dev>:
+        -fsanitize=address,undefined,leak
+    >
+)
+
+target_compile_definitions(template PRIVATE
+    $<$<CONFIG:Release>:VERBOSITY=5>
+)
+
 target_compile_options(template PRIVATE
     $<$<CONFIG:Release>:-O3>
 )
