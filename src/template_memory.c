@@ -18,7 +18,7 @@ bool TemplateTryAlloc(
 
     void *ptr = malloc(size);
     if (ptr == NULL)
-        return TemplateSetErrorErrno(errorBuffer, "Failed to allocate %zu bytes", size);
+        return TemplateSetErrorErrno(errorBuffer, "Failed to allocate " USIZE_FMT " bytes", size);
 
     memset(ptr, 0, size);
 
@@ -48,7 +48,7 @@ bool TemplateTryAllocMany(
 
     usize size;
     if (!TemplateCheckedMulUsize(count, elemSize, &size))
-        return TemplateSetError(errorBuffer, "Allocation size overflow: %zu * %zu", count, elemSize);
+        return TemplateSetError(errorBuffer, "Allocation size overflow: " USIZE_FMT " * " USIZE_FMT "", count, elemSize);
 
     return TemplateTryAlloc(out, size, errorBuffer);
 }
@@ -78,7 +78,7 @@ bool TemplateTryRealloc(
     void *newPtr = realloc(*ptr, newSize);
     if (newPtr == NULL)
     {
-        bool ok = TemplateSetErrorErrno(errorBuffer, "Failed to reallocate to %zu bytes", newSize);
+        bool ok = TemplateSetErrorErrno(errorBuffer, "Failed to reallocate to " USIZE_FMT " bytes", newSize);
         free(*ptr);
         *ptr = NULL;
         return ok;
