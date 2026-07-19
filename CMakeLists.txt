@@ -67,7 +67,7 @@ target_link_options(template PRIVATE
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:Release>:VERBOSITY=6>
+    $<$<CONFIG:Debug>:VERBOSITY=6>
 )
 
 target_compile_options(template PRIVATE
@@ -88,7 +88,7 @@ target_link_options(template PRIVATE
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:Release>:VERBOSITY=5>
+    $<$<CONFIG:Dev>:VERBOSITY=5>
 )
 
 target_compile_options(template PRIVATE
