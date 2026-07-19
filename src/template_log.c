@@ -12,12 +12,16 @@ static bool gUseColorStderr = false;
 
 #define TEMPLATE_COLOR_RESET "\033[0m"
 #define TEMPLATE_COLOR_BOLD "\033[1m"
+#define TEMPLATE_COLOR_REVERSE "\033[7m"
 
 #define TEMPLATE_COLOR_RED "\033[31m"
 #define TEMPLATE_COLOR_MAGENTA "\033[35m"
+#define TEMPLATE_COLOR_GREEN "\033[32m"
 #define TEMPLATE_COLOR_YELLOW "\033[33m"
 #define TEMPLATE_COLOR_CYAN "\033[36m"
 #define TEMPLATE_COLOR_GRAY "\033[90m"
+
+#define TEMPLATE_COLOR_FATAL TEMPLATE_COLOR_REVERSE TEMPLATE_COLOR_RED
 
 void TemplateLogInit(void)
 {
@@ -65,6 +69,16 @@ static void TemplateLogWrite(
 }
 
 #if VERBOSITY >= 1
+void TemplateLogFatal(const char *file, i32 line, const char *func, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    TemplateLogWrite(stderr, gUseColorStderr, true, "FATAL", TEMPLATE_COLOR_FATAL, file, line, func, fmt, args);
+    va_end(args);
+}
+#endif
+
+#if VERBOSITY >= 2
 void TemplateLogError(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;
@@ -74,32 +88,42 @@ void TemplateLogError(const char *file, i32 line, const char *func, const char *
 }
 #endif
 
-#if VERBOSITY >= 2
-void TemplateLogWarning(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    TemplateLogWrite(stdout, gUseColorStdout, false, "WARNING", TEMPLATE_COLOR_MAGENTA, NULL, 0, NULL, fmt, args);
-    va_end(args);
-}
-#endif
-
 #if VERBOSITY >= 3
-void TemplateLogInfo(const char *fmt, ...)
+void TemplateLogWarning(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    TemplateLogWrite(stdout, gUseColorStdout, false, "INFO", TEMPLATE_COLOR_YELLOW, NULL, 0, NULL, fmt, args);
+    TemplateLogWrite(stdout, gUseColorStdout, false, "WARNING", TEMPLATE_COLOR_MAGENTA, file, line, func, fmt, args);
     va_end(args);
 }
 #endif
 
 #if VERBOSITY >= 4
+void TemplateLogInfo(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    TemplateLogWrite(stdout, gUseColorStdout, false, "INFO", TEMPLATE_COLOR_GREEN, NULL, 0, NULL, fmt, args);
+    va_end(args);
+}
+#endif
+
+#if VERBOSITY >= 5
 void TemplateLogDebug(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    TemplateLogWrite(stdout, gUseColorStdout, false, "DEBUG", TEMPLATE_COLOR_CYAN, file, line, func, fmt, args);
+    TemplateLogWrite(stdout, gUseColorStdout, false, "DEBUG", TEMPLATE_COLOR_YELLOW, file, line, func, fmt, args);
+    va_end(args);
+}
+#endif
+
+#if VERBOSITY >= 6
+void TemplateLogTrace(const char *file, i32 line, const char *func, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    TemplateLogWrite(stdout, gUseColorStdout, false, "TRACE", TEMPLATE_COLOR_CYAN, file, line, func, fmt, args);
     va_end(args);
 }
 #endif
