@@ -36,12 +36,11 @@ void TemplateLogInit(void);
     } while (0)
 
 #if VERBOSITY >= 1
-void TemplateLogFatal(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
+TEMPLATE_NORETURN void TemplateLogFatal(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
 #define LOG_FATAL(...) TemplateLogFatal(__FILE__, __LINE__, __func__, __VA_ARGS__)
 
-void TemplateLogNotImplemented(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
-#define _LOG_NOT_IMPLEMENTED(...) TemplateLogNotImplemented(__FILE__, __LINE__, __func__, __VA_ARGS__)
-#define LOG_NOT_IMPLEMENTED(...) LOG_ONCE(_LOG_NOT_IMPLEMENTED, __VA_ARGS__)
+TEMPLATE_NORETURN void TemplateLogNotImplemented(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
+#define LOG_NOT_IMPLEMENTED(...) TemplateLogNotImplemented(__FILE__, __LINE__, __func__, __VA_ARGS__)
 #else
 #define LOG_FATAL(...) ((void)0)
 #define LOG_NOT_IMPLEMENTED(...) ((void)0)
