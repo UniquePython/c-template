@@ -1,10 +1,12 @@
 #ifndef TEMPLATE_CHECKED_MATH_H_
 #define TEMPLATE_CHECKED_MATH_H_
 
+#include <math.h>
+
 /**
  * @file template_checked_math.h
  * @brief Overflow-safe arithmetic helpers for every fixed-width integer
- *        type in @ref template_types.h (excludes floating-point types).
+ *        type in @ref template_types.h, including floating-point.
  *
  * Each function performs the named operation on a specific type and
  * reports whether the result is representable, rather than silently
@@ -24,11 +26,21 @@
  * divisor) and are implemented as a plain zero-check followed by the
  * operation.
  *
+ * Floating-point types have no equivalent overflow intrinsic —
+ * `__builtin_*_overflow` only accepts integral types. Instead, the
+ * float/double `Checked*` functions perform the operation and then
+ * inspect the *result*: an `inf`/`nan` that appears in the result but
+ * was not already present in either input is treated as this
+ * operation's failure. An `inf`/`nan` that was already present in an
+ * input (and simply propagates through unchanged) is not treated as a
+ * new failure, since the caller presumably already knows about it.
+ *
  * All functions are `static inline` (header-only, no matching `.c`
- * file) — each body is a one-line wrapper around either a compiler
- * intrinsic or a zero-check, so there is nothing to gain from a separate
- * translation unit, and inlining avoids a real call-boundary in what may
- * be a hot-ish path (e.g. allocation size computation).
+ * file) — each body is a short wrapper around a compiler intrinsic, a
+ * zero-check, or (for floating-point) a post-hoc `isinf`/`isnan`
+ * classification of the result, so there is nothing to gain from a
+ * separate translation unit, and inlining avoids a real call-boundary in
+ * what may be a hot-ish path (e.g. allocation size computation).
  *
  * For every function below: on failure, `*out` is left unmodified (not
  * zeroed) — callers must check the return value before reading `*out`.
@@ -419,6 +431,152 @@ static inline bool TemplateCheckedModUsize(usize a, usize b, usize *out)
         return false;
 
     *out = a % b;
+    return true;
+}
+
+/* ---------------------------------------------------------------- f32 */
+
+/**
+ * @brief Computes `a + b` for @ref f32, checked for overflow-to-infinity
+ *        and NaN production.
+ *
+ * @note Unlike the integer `Checked*` functions, this cannot use a
+ *       compiler overflow-detection intrinsic — `__builtin_add_overflow`
+ *       and friends only accept integral types. Instead, the operation
+ *       is performed and then the *result* is inspected: if the result
+ *       is `inf`/`nan` but neither input already was, the operation
+ *       itself produced that value, which is treated as failure. An
+ *       `inf`/`nan` that was already present in an input (and simply
+ *       propagates through) is not treated as a new failure — the
+ *       caller presumably already knows about it.
+ */
+static inline bool TemplateCheckedAddF32(f32 a, f32 b, f32 *out)
+{
+    f32 result = a + b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
+    return true;
+}
+
+/** @brief Computes `a - b` for @ref f32, checked the same way as @ref TemplateCheckedAddF32. */
+static inline bool TemplateCheckedSubF32(f32 a, f32 b, f32 *out)
+{
+    f32 result = a - b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
+    return true;
+}
+
+/** @brief Computes `a * b` for @ref f32, checked the same way as @ref TemplateCheckedAddF32. */
+static inline bool TemplateCheckedMulF32(f32 a, f32 b, f32 *out)
+{
+    f32 result = a * b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
+    return true;
+}
+
+/**
+ * @brief Computes `a / b` for @ref f32, checked for division by zero,
+ *        overflow-to-infinity, and NaN production.
+ *
+ * @note A zero divisor is rejected outright (mirroring the integer
+ *       `CheckedDiv*` functions), rather than being allowed to produce
+ *       IEEE-754 infinity/NaN and then be caught by the post-hoc
+ *       `isinf`/`isnan` check below — both amount to the same rejection,
+ *       but checking `b == 0` first avoids relying on the following
+ *       checks to catch it and documents the zero-divisor case
+ *       explicitly.
+ */
+static inline bool TemplateCheckedDivF32(f32 a, f32 b, f32 *out)
+{
+    if (b == 0.0f)
+        return false;
+
+    f32 result = a / b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
+    return true;
+}
+
+/* ---------------------------------------------------------------- f64 */
+
+/** @brief Computes `a + b` for @ref f64, checked the same way as @ref TemplateCheckedAddF32. */
+static inline bool TemplateCheckedAddF64(f64 a, f64 b, f64 *out)
+{
+    f64 result = a + b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
+    return true;
+}
+
+/** @brief Computes `a - b` for @ref f64, checked the same way as @ref TemplateCheckedAddF32. */
+static inline bool TemplateCheckedSubF64(f64 a, f64 b, f64 *out)
+{
+    f64 result = a - b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
+    return true;
+}
+
+/** @brief Computes `a * b` for @ref f64, checked the same way as @ref TemplateCheckedAddF32. */
+static inline bool TemplateCheckedMulF64(f64 a, f64 b, f64 *out)
+{
+    f64 result = a * b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
+    return true;
+}
+
+/** @brief Computes `a / b` for @ref f64, checked the same way as @ref TemplateCheckedDivF32. */
+static inline bool TemplateCheckedDivF64(f64 a, f64 b, f64 *out)
+{
+    if (b == 0.0)
+        return false;
+
+    f64 result = a / b;
+
+    if (isnan(result) && !isnan(a) && !isnan(b))
+        return false;
+    if (isinf(result) && !isinf(a) && !isinf(b))
+        return false;
+
+    *out = result;
     return true;
 }
 
