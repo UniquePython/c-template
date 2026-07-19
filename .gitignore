@@ -59,7 +59,6 @@ build/
 bin/
 
 # Editor
-.vscode/
 .idea/
 *.swp
 *.swo
