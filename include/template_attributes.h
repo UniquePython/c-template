@@ -8,6 +8,7 @@
 #define TEMPLATE_CONST __attribute__((const))
 #define TEMPLATE_PURE __attribute__((pure))
 #define TEMPLATE_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
+#define TEMPLATE_NORETURN __attribute__((noreturn))
 
 #define TEMPLATE_DISCARD_CONST(ptr)                                                                                                       \
     (__extension__({                                                                                                                      \
@@ -17,5 +18,7 @@
         _Pragma("GCC diagnostic pop")                                                                                                     \
             TEMPLATE_DISCARD_CONST_result_;                                                                                               \
     }))
+
+#define TEMPLATE_UNUSED_VAR(var) (void)(var)
 
 #endif
