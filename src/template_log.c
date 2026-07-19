@@ -81,6 +81,16 @@ void TemplateLogFatal(const char *file, i32 line, const char *func, const char *
 
     abort();
 }
+
+void TemplateLogNotImplemented(const char *file, i32 line, const char *func, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    TemplateLogWrite(stdout, gUseColorStdout, false, "NOT IMPLEMENTED", TEMPLATE_COLOR_NOT_IMPLEMENTED, file, line, func, fmt, args);
+    va_end(args);
+
+    abort();
+}
 #endif
 
 #if VERBOSITY >= 2
@@ -127,14 +137,6 @@ void TemplateLogDebug(const char *file, i32 line, const char *func, const char *
     va_list args;
     va_start(args, fmt);
     TemplateLogWrite(stdout, gUseColorStdout, false, "DEBUG", TEMPLATE_COLOR_YELLOW, file, line, func, fmt, args);
-    va_end(args);
-}
-
-void TemplateLogDeprecated(const char *file, i32 line, const char *func, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    TemplateLogWrite(stdout, gUseColorStdout, false, "NOT IMPLEMENTED", TEMPLATE_COLOR_NOT_IMPLEMENTED, file, line, func, fmt, args);
     va_end(args);
 }
 #endif

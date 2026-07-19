@@ -7,17 +7,17 @@
 
 #ifndef VERBOSITY
 /*
- * 1 = FATAL
+ * 1 = FATAL + NOT_IMPLEMENTED
  *
- * 2 = FATAL + ERROR
+ * 2 = FATAL + NOT_IMPLEMENTED + ERROR
  *
- * 3 = FATAL + ERROR + WARNING
+ * 3 = FATAL + NOT_IMPLEMENTED + ERROR + WARNING + DEPRECATED
  *
- * 4 = FATAL + ERROR + WARNING + INFO
+ * 4 = FATAL + NOT_IMPLEMENTED + ERROR + WARNING + DEPRECATED + INFO
  *
- * 5 = FATAL + ERROR + WARNING + INFO + DEBUG (default)
+ * 5 = FATAL + NOT_IMPLEMENTED + ERROR + WARNING + DEPRECATED + INFO + DEBUG (default)
  *
- * 6 = FATAL + ERROR + WARNING + INFO + DEBUG + TRACE
+ * 6 = FATAL + NOT_IMPLEMENTED + ERROR + WARNING + DEPRECATED + INFO + DEBUG + TRACE
  */
 #define VERBOSITY 5
 #endif
@@ -38,8 +38,13 @@ void TemplateLogInit(void);
 #if VERBOSITY >= 1
 void TemplateLogFatal(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
 #define LOG_FATAL(...) TemplateLogFatal(__FILE__, __LINE__, __func__, __VA_ARGS__)
+
+void TemplateLogNotImplemented(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
+#define _LOG_NOT_IMPLEMENTED(...) TemplateLogNotImplemented(__FILE__, __LINE__, __func__, __VA_ARGS__)
+#define LOG_NOT_IMPLEMENTED(...) LOG_ONCE(_LOG_NOT_IMPLEMENTED, __VA_ARGS__)
 #else
 #define LOG_FATAL(...) ((void)0)
+#define LOG_NOT_IMPLEMENTED(...) ((void)0)
 #endif
 
 #if VERBOSITY >= 2
@@ -78,14 +83,9 @@ void TemplateLogInfo(const char *fmt, ...) TEMPLATE_PRINTF(1, 2);
 void TemplateLogDebug(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
 #define LOG_DEBUG(...) TemplateLogDebug(__FILE__, __LINE__, __func__, __VA_ARGS__)
 #define LOG_DEBUG_ONCE(...) LOG_ONCE(LOG_DEBUG, __VA_ARGS__)
-
-void TemplateLogNotImplemented(const char *file, i32 line, const char *func, const char *fmt, ...) TEMPLATE_PRINTF(4, 5);
-#define _LOG_NOT_IMPLEMENTED(...) TemplateLogNotImplemented(__FILE__, __LINE__, __func__, __VA_ARGS__)
-#define LOG_NOT_IMPLEMENTED(...) LOG_ONCE(_LOG_NOT_IMPLEMENTED, __VA_ARGS__)
 #else
 #define LOG_DEBUG(...) ((void)0)
 #define LOG_DEBUG_ONCE(...) ((void)0)
-#define LOG_NOT_IMPLEMENTED(...) ((void)0)
 #endif
 
 #if VERBOSITY >= 6
