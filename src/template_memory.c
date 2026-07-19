@@ -14,11 +14,19 @@ bool TemplateTryAlloc(
         return false;
 
     if (size == 0)
-        return TemplateSetError(errorBuffer, "Cannot allocate 0 bytes");
+    {
+        if (!TemplateSetError(errorBuffer, "Cannot allocate 0 bytes"))
+            LOG_WARN("Error message was truncated");
+        return false;
+    }
 
     void *ptr = malloc(size);
     if (ptr == NULL)
-        return TemplateSetErrorErrno(errorBuffer, "Failed to allocate " USIZE_FMT " bytes", size);
+    {
+        if (!TemplateSetErrorErrno(errorBuffer, "Failed to allocate " USIZE_FMT " bytes", size))
+            LOG_WARN("Error message was truncated");
+        return false;
+    }
 
     memset(ptr, 0, size);
 
@@ -48,7 +56,11 @@ bool TemplateTryAllocMany(
 
     usize size;
     if (!TemplateCheckedMulUsize(count, elemSize, &size))
-        return TemplateSetError(errorBuffer, "Allocation size overflow: " USIZE_FMT " * " USIZE_FMT "", count, elemSize);
+    {
+        if (!TemplateSetError(errorBuffer, "Allocation size overflow: " USIZE_FMT " * " USIZE_FMT, count, elemSize))
+            LOG_WARN("Error message was truncated");
+        return false;
+    }
 
     return TemplateTryAlloc(out, size, errorBuffer);
 }
@@ -73,15 +85,20 @@ bool TemplateTryRealloc(
         return false;
 
     if (newSize == 0)
-        return TemplateSetError(errorBuffer, "Cannot allocate 0 bytes");
+    {
+        if (!TemplateSetError(errorBuffer, "Cannot allocate 0 bytes"))
+            LOG_WARN("Error message was truncated");
+        return false;
+    }
 
     void *newPtr = realloc(*ptr, newSize);
     if (newPtr == NULL)
     {
-        bool ok = TemplateSetErrorErrno(errorBuffer, "Failed to reallocate to " USIZE_FMT " bytes", newSize);
+        if (!TemplateSetErrorErrno(errorBuffer, "Failed to reallocate to " USIZE_FMT " bytes", newSize))
+            LOG_WARN("Error message was truncated");
         free(*ptr);
         *ptr = NULL;
-        return ok;
+        return false;
     }
 
     *ptr = newPtr;
