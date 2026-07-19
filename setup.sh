@@ -80,9 +80,11 @@ fi
 cd "$ROOT_DIR"
 
 # Replace text contents first (while filenames still match what find will
-# locate), skipping VCS metadata and this script itself.
+# locate), skipping VCS metadata, build/, bin/ and this script itself.
 FILES=$(find . \
     -path ./.git -prune -o \
+    -path ./build -prune -o \
+    -path ./bin -prune -o \
     -type f -not -name "$(basename "$SCRIPT_PATH")" -print)
 
 while IFS= read -r file; do
@@ -100,7 +102,7 @@ done <<< "$FILES"
 
 # Rename files/dirs containing "template" in their name, deepest first so
 # renaming a directory doesn't invalidate paths to files still inside it.
-find . -path ./.git -prune -o -depth -name '*template*' -print | while IFS= read -r path; do
+find . -path ./.git -prune -o -path ./build -prune -o -path ./bin -prune -o -depth -name '*template*' -print | while IFS= read -r path; do
     dir=$(dirname "$path")
     base=$(basename "$path")
     new_base="${base//template/${LOWER_NAME}}"
