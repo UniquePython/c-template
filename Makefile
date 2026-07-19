@@ -1,13 +1,13 @@
 debug:
-	cmake -B build/debug -DCMAKE_BUILD_TYPE=Debug
+	cmake -B build/debug -DCMAKE_BUILD_TYPE=debug
 	cmake --build build/debug
 
 dev:
-	cmake -B build/dev -DCMAKE_BUILD_TYPE=Dev
+	cmake -B build/dev -DCMAKE_BUILD_TYPE=dev
 	cmake --build build/dev
 
 release:
-	cmake -B build/release -DCMAKE_BUILD_TYPE=Release
+	cmake -B build/release -DCMAKE_BUILD_TYPE=release
 	cmake --build build/release
 
 RED := \033[31m

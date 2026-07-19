@@ -13,7 +13,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 add_executable(template ${SOURCES})
 
 set_target_properties(template PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/$<CONFIG>"
 )
 
 target_include_directories(template PRIVATE
@@ -50,7 +50,7 @@ target_compile_options(template PRIVATE
 )
 
 target_compile_options(template PRIVATE
-    $<$<CONFIG:Debug>:
+    $<$<CONFIG:debug>:
         -Og
         -g
         -fanalyzer
@@ -61,17 +61,17 @@ target_compile_options(template PRIVATE
 )
 
 target_link_options(template PRIVATE
-    $<$<CONFIG:Debug>:
+    $<$<CONFIG:debug>:
         -fsanitize=address,undefined,leak
     >
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:Debug>:VERBOSITY=6>
+    $<$<CONFIG:debug>:VERBOSITY=6>
 )
 
 target_compile_options(template PRIVATE
-    $<$<CONFIG:Dev>:
+    $<$<CONFIG:dev>:
         -Og
         -g
         -fanalyzer
@@ -82,19 +82,19 @@ target_compile_options(template PRIVATE
 )
 
 target_link_options(template PRIVATE
-    $<$<CONFIG:Dev>:
+    $<$<CONFIG:dev>:
         -fsanitize=address,undefined,leak
     >
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:Dev>:VERBOSITY=5>
+    $<$<CONFIG:dev>:VERBOSITY=5>
 )
 
 target_compile_options(template PRIVATE
-    $<$<CONFIG:Release>:-O3>
+    $<$<CONFIG:release>:-O3>
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:Release>:VERBOSITY=3>
+    $<$<CONFIG:release>:VERBOSITY=3>
 )
