@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 static bool gUseColorStdout = false;
 static bool gUseColorStderr = false;
@@ -22,6 +23,8 @@ static bool gUseColorStderr = false;
 #define TEMPLATE_COLOR_GRAY "\033[90m"
 
 #define TEMPLATE_COLOR_FATAL TEMPLATE_COLOR_REVERSE TEMPLATE_COLOR_RED
+#define TEMPLATE_COLOR_DEPRECATED TEMPLATE_COLOR_REVERSE TEMPLATE_COLOR_MAGENTA
+#define TEMPLATE_COLOR_NOT_IMPLEMENTED TEMPLATE_COLOR_REVERSE TEMPLATE_COLOR_YELLOW
 
 void TemplateLogInit(void)
 {
@@ -75,6 +78,8 @@ void TemplateLogFatal(const char *file, i32 line, const char *func, const char *
     va_start(args, fmt);
     TemplateLogWrite(stderr, gUseColorStderr, true, "FATAL", TEMPLATE_COLOR_FATAL, file, line, func, fmt, args);
     va_end(args);
+
+    abort();
 }
 #endif
 
@@ -96,6 +101,14 @@ void TemplateLogWarning(const char *file, i32 line, const char *func, const char
     TemplateLogWrite(stdout, gUseColorStdout, false, "WARNING", TEMPLATE_COLOR_MAGENTA, file, line, func, fmt, args);
     va_end(args);
 }
+
+void TemplateLogDeprecated(const char *file, i32 line, const char *func, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    TemplateLogWrite(stdout, gUseColorStdout, false, "DEPRECATED", TEMPLATE_COLOR_DEPRECATED, file, line, func, fmt, args);
+    va_end(args);
+}
 #endif
 
 #if VERBOSITY >= 4
@@ -114,6 +127,14 @@ void TemplateLogDebug(const char *file, i32 line, const char *func, const char *
     va_list args;
     va_start(args, fmt);
     TemplateLogWrite(stdout, gUseColorStdout, false, "DEBUG", TEMPLATE_COLOR_YELLOW, file, line, func, fmt, args);
+    va_end(args);
+}
+
+void TemplateLogDeprecated(const char *file, i32 line, const char *func, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    TemplateLogWrite(stdout, gUseColorStdout, false, "NOT IMPLEMENTED", TEMPLATE_COLOR_NOT_IMPLEMENTED, file, line, func, fmt, args);
     va_end(args);
 }
 #endif
