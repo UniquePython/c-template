@@ -284,11 +284,11 @@ typedef double f64;
  *
  * @warning `printf`'s variadic argument-promotion rules mean a bare
  *          `f32`/`float` argument is promoted to `double` when passed
- *          through `...`, so `%f` (not a distinct `float`-specific
+ *          through `...`, so `%g` (not a distinct `float`-specific
  *          specifier) is correct here — but the argument itself must
  *          actually be promoted to `double`. See @ref F32_ARG.
  */
-#define F32_FMT "%f"
+#define F32_FMT "%g"
 
 /**
  * @def F32_FMT_LN
@@ -318,7 +318,7 @@ typedef double f64;
  * @def F64_FMT
  * @brief printf conversion specifier for an @ref f64 value.
  */
-#define F64_FMT "%f"
+#define F64_FMT "%g"
 
 /**
  * @def F64_FMT_LN
