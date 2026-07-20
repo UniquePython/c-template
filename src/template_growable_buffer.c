@@ -138,9 +138,9 @@ bool TemplateGrowableBufferTryPush(
 }
 
 bool TemplateGrowableBufferTryGet(
-    const TemplateGrowableBuffer *buf,
+    const TemplateGrowableBuffer *restrict buf,
     usize index,
-    void *out)
+    void *restrict out)
 {
     if (buf == NULL || out == NULL)
         return false;
@@ -161,8 +161,8 @@ usize TemplateGrowableBufferLen(const TemplateGrowableBuffer *buf)
 }
 
 bool TemplateGrowableBufferTryPop(
-    TemplateGrowableBuffer *buf,
-    void *out)
+    TemplateGrowableBuffer *restrict buf,
+    void *restrict out)
 {
     if (buf == NULL || buf->len == 0)
         return false;
@@ -176,9 +176,9 @@ bool TemplateGrowableBufferTryPop(
 }
 
 bool TemplateGrowableBufferTryRemove(
-    TemplateGrowableBuffer *buf,
+    TemplateGrowableBuffer *restrict buf,
     usize index,
-    void *out)
+    void *restrict out)
 {
     if (buf == NULL)
         return false;
@@ -202,9 +202,9 @@ bool TemplateGrowableBufferTryRemove(
 }
 
 bool TemplateGrowableBufferTrySwapRemove(
-    TemplateGrowableBuffer *buf,
+    TemplateGrowableBuffer *restrict buf,
     usize index,
-    void *out)
+    void *restrict out)
 {
     if (buf == NULL)
         return false;

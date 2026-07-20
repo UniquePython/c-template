@@ -56,16 +56,16 @@ f64 TemplateInstantElapsedSeconds(TemplateInstant start);
  *       buffer's contents are then unspecified and must not be used.
  */
 bool TemplateTryWallClockLocal(
-    char *buf,
+    char *restrict buf,
     usize bufSize,
-    const char *fmt,
+    const char *restrict fmt,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
 /** @brief Same as @ref TemplateTryWallClockLocal but in UTC (via `gmtime`). */
 bool TemplateTryWallClockUTC(
-    char *buf,
+    char *restrict buf,
     usize bufSize,
-    const char *fmt,
+    const char *restrict fmt,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
 #endif /* TEMPLATE_TIME_H */

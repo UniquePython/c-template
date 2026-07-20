@@ -67,7 +67,7 @@ bool TemplateLogStderrColorEnabled(void)
 }
 
 #if TEMPLATE_VERBOSITY >= 1
-void TemplateLogFatal(const char *file, i32 line, const char *func, const char *fmt, ...)
+void TemplateLogFatal(const char *restrict file, i32 line, const char *restrict func, const char *restrict fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -77,7 +77,7 @@ void TemplateLogFatal(const char *file, i32 line, const char *func, const char *
     abort();
 }
 
-void TemplateLogNotImplemented(const char *file, i32 line, const char *func, const char *fmt, ...)
+void TemplateLogNotImplemented(const char *restrict file, i32 line, const char *restrict func, const char *restrict fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -89,7 +89,7 @@ void TemplateLogNotImplemented(const char *file, i32 line, const char *func, con
 #endif
 
 #if TEMPLATE_VERBOSITY >= 2
-void TemplateLogError(const char *file, i32 line, const char *func, const char *fmt, ...)
+void TemplateLogError(const char *restrict file, i32 line, const char *restrict func, const char *restrict fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -99,7 +99,7 @@ void TemplateLogError(const char *file, i32 line, const char *func, const char *
 #endif
 
 #if TEMPLATE_VERBOSITY >= 3
-void TemplateLogWarning(const char *file, i32 line, const char *func, const char *fmt, ...)
+void TemplateLogWarning(const char *restrict file, i32 line, const char *restrict func, const char *restrict fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -107,7 +107,7 @@ void TemplateLogWarning(const char *file, i32 line, const char *func, const char
     va_end(args);
 }
 
-void TemplateLogDeprecated(const char *file, i32 line, const char *func, const char *fmt, ...)
+void TemplateLogDeprecated(const char *restrict file, i32 line, const char *restrict func, const char *restrict fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -127,7 +127,7 @@ void TemplateLogInfo(const char *fmt, ...)
 #endif
 
 #if TEMPLATE_VERBOSITY >= 5
-void TemplateLogDebug(const char *file, i32 line, const char *func, const char *fmt, ...)
+void TemplateLogDebug(const char *restrict file, i32 line, const char *restrict func, const char *restrict fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -137,7 +137,7 @@ void TemplateLogDebug(const char *file, i32 line, const char *func, const char *
 #endif
 
 #if TEMPLATE_VERBOSITY >= 6
-void TemplateLogTrace(const char *file, i32 line, const char *func, const char *fmt, ...)
+void TemplateLogTrace(const char *restrict file, i32 line, const char *restrict func, const char *restrict fmt, ...)
 {
     va_list args;
     va_start(args, fmt);

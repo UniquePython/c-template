@@ -89,9 +89,9 @@
     /* Copies the element at index into *out. See                                                                  \
      * TemplateGrowableBufferTryGet. */                                                                            \
     TEMPLATE_WARN_UNUSED_RESULT static inline bool TemplateGrowableBuffer##Name##TryGet(                           \
-        const TemplateGrowableBuffer##Name *self,                                                                  \
+        const TemplateGrowableBuffer##Name *restrict self,                                                         \
         usize index,                                                                                               \
-        T *out)                                                                                                    \
+        T *restrict out)                                                                                           \
     {                                                                                                              \
         if (self == NULL)                                                                                          \
             return false;                                                                                          \
@@ -111,8 +111,8 @@
     /* Removes and copies out the last element. out may be NULL. See                                               \
      * TemplateGrowableBufferTryPop. */                                                                            \
     TEMPLATE_WARN_UNUSED_RESULT static inline bool TemplateGrowableBuffer##Name##TryPop(                           \
-        TemplateGrowableBuffer##Name *self,                                                                        \
-        T *out)                                                                                                    \
+        TemplateGrowableBuffer##Name *restrict self,                                                               \
+        T *restrict out)                                                                                           \
     {                                                                                                              \
         if (self == NULL)                                                                                          \
             return false;                                                                                          \
@@ -123,9 +123,9 @@
     /* Order-preserving removal. out may be NULL. See                                                              \
      * TemplateGrowableBufferTryRemove. */                                                                         \
     TEMPLATE_WARN_UNUSED_RESULT static inline bool TemplateGrowableBuffer##Name##TryRemove(                        \
-        TemplateGrowableBuffer##Name *self,                                                                        \
+        TemplateGrowableBuffer##Name *restrict self,                                                               \
         usize index,                                                                                               \
-        T *out)                                                                                                    \
+        T *restrict out)                                                                                           \
     {                                                                                                              \
         if (self == NULL)                                                                                          \
             return false;                                                                                          \
@@ -136,9 +136,9 @@
     /* O(1), non-order-preserving removal. out may be NULL. See                                                    \
      * TemplateGrowableBufferTrySwapRemove. */                                                                     \
     TEMPLATE_WARN_UNUSED_RESULT static inline bool TemplateGrowableBuffer##Name##TrySwapRemove(                    \
-        TemplateGrowableBuffer##Name *self,                                                                        \
+        TemplateGrowableBuffer##Name *restrict self,                                                               \
         usize index,                                                                                               \
-        T *out)                                                                                                    \
+        T *restrict out)                                                                                           \
     {                                                                                                              \
         if (self == NULL)                                                                                          \
             return false;                                                                                          \

@@ -6,7 +6,7 @@
 #include <string.h>
 
 bool TemplateTryAlloc(
-    void **out,
+    void **restrict out,
     usize size,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
@@ -46,7 +46,7 @@ void *TemplateAlloc(usize size)
 }
 
 bool TemplateTryAllocMany(
-    void **out,
+    void **restrict out,
     usize count,
     usize elemSize,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
@@ -77,7 +77,7 @@ void *TemplateAllocMany(usize count, usize elemSize)
 }
 
 bool TemplateTryRealloc(
-    void **ptr,
+    void **restrict ptr,
     usize newSize,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {

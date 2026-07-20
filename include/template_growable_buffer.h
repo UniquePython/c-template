@@ -143,9 +143,9 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryPush(
  * invariant.
  */
 TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryGet(
-    const TemplateGrowableBuffer *buf,
+    const TemplateGrowableBuffer *restrict buf,
     usize index,
-    void *out);
+    void *restrict out);
 
 /**
  * @brief Returns the number of elements currently stored.
@@ -168,8 +168,8 @@ usize TemplateGrowableBufferLen(const TemplateGrowableBuffer *buf);
  * release unused capacity explicitly.
  */
 TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryPop(
-    TemplateGrowableBuffer *buf,
-    void *out);
+    TemplateGrowableBuffer *restrict buf,
+    void *restrict out);
 
 /**
  * @brief Removes the element at `index`, shifting all later elements
@@ -186,9 +186,9 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryPop(
  * element order doesn't need to be preserved.
  */
 TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryRemove(
-    TemplateGrowableBuffer *buf,
+    TemplateGrowableBuffer *restrict buf,
     usize index,
-    void *out);
+    void *restrict out);
 
 /**
  * @brief Removes the element at `index` in O(1) by moving the last
@@ -201,9 +201,9 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryRemove(
  * @return `true` on success, `false` if `index` is out of bounds.
  */
 TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTrySwapRemove(
-    TemplateGrowableBuffer *buf,
+    TemplateGrowableBuffer *restrict buf,
     usize index,
-    void *out);
+    void *restrict out);
 
 /**
  * @brief Resets the buffer's length to `0`. Does not free or shrink the

@@ -58,7 +58,7 @@
  *         either case).
  */
 TEMPLATE_WARN_UNUSED_RESULT bool TemplateTryAlloc(
-    void **out,
+    void **restrict out,
     usize size,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
@@ -91,7 +91,7 @@ TEMPLATE_WARN_UNUSED_RESULT void *TemplateAlloc(usize size);
  * zero-size rejection used by @ref TemplateTryAlloc.
  */
 TEMPLATE_WARN_UNUSED_RESULT bool TemplateTryAllocMany(
-    void **out,
+    void **restrict out,
     usize count,
     usize elemSize,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
@@ -132,7 +132,7 @@ TEMPLATE_WARN_UNUSED_RESULT void *TemplateAllocMany(usize count, usize elemSize)
  *       block on success, or `NULL` on failure.
  */
 TEMPLATE_WARN_UNUSED_RESULT bool TemplateTryRealloc(
-    void **ptr,
+    void **restrict ptr,
     usize newSize,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 

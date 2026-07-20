@@ -35,9 +35,9 @@ f64 TemplateInstantElapsedSeconds(TemplateInstant start)
 }
 
 static bool WallClockFormatted(
-    char *buf,
+    char *restrict buf,
     usize bufSize,
-    const char *fmt,
+    const char *restrict fmt,
     struct tm *(*convert)(const time_t *),
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
@@ -63,18 +63,18 @@ static bool WallClockFormatted(
 }
 
 bool TemplateTryWallClockLocal(
-    char *buf,
+    char *restrict buf,
     usize bufSize,
-    const char *fmt,
+    const char *restrict fmt,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     return WallClockFormatted(buf, bufSize, fmt, localtime, errorBuffer);
 }
 
 bool TemplateTryWallClockUTC(
-    char *buf,
+    char *restrict buf,
     usize bufSize,
-    const char *fmt,
+    const char *restrict fmt,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     return WallClockFormatted(buf, bufSize, fmt, gmtime, errorBuffer);
