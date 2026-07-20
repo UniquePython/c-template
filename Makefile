@@ -16,18 +16,18 @@ GREEN := \033[32m
 RESET := \033[0m
 
 check-release-ready:
-	@if grep -rn --color=always 'LOG_NOT_IMPLEMENTED(' src/ include/ --exclude=template_log.h; then \
-		printf "$(BOLD)$(RED)error:$(RESET) LOG_NOT_IMPLEMENTED(...) calls found above\n"; \
+	@if grep -rn --color=always 'TEMPLATE_LOG_NOT_IMPLEMENTED(' src/ include/ --exclude=template_log.h; then \
+		printf "$(BOLD)$(RED)error:$(RESET) TEMPLATE_LOG_NOT_IMPLEMENTED(...) calls found above\n"; \
 		exit 1; \
 	else \
-		printf "$(BOLD)$(GREEN)ok:$(RESET) no LOG_NOT_IMPLEMENTED(...) calls found\n"; \
+		printf "$(BOLD)$(GREEN)ok:$(RESET) no TEMPLATE_LOG_NOT_IMPLEMENTED(...) calls found\n"; \
 	fi
 
-	@if grep -rn --color=always 'ASSERT_DEBUG(' src/ include/ --exclude=template_log.h; then \
-		printf "$(BOLD)$(RED)error:$(RESET) ASSERT_DEBUG(...) calls found above\n"; \
+	@if grep -rn --color=always 'TEMPLATE_ASSERT_DEBUG(' src/ include/ --exclude=template_assert.h; then \
+		printf "$(BOLD)$(RED)error:$(RESET) TEMPLATE_ASSERT_DEBUG(...) calls found above\n"; \
 		exit 1; \
 	else \
-		printf "$(BOLD)$(GREEN)ok:$(RESET) no ASSERT_DEBUG(...) calls found\n"; \
+		printf "$(BOLD)$(GREEN)ok:$(RESET) no TEMPLATE_ASSERT_DEBUG(...) calls found\n"; \
 	fi
 
 clean:
