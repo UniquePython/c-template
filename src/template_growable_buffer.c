@@ -268,10 +268,7 @@ bool TemplateGrowableBufferTryShrinkToFit(
          * failed growth -- most realloc implementations do not fail
          * when shrinking. If it somehow does, TemplateTryRealloc has
          * already freed buf->data (see the note in TryReserve above),
-         * so, unlike this function's documented contract promises, buf
-         * cannot be left "unmodified" in that scenario -- the data is
-         * gone either way, so treat it the same as TryReserve's failure
-         * path rather than pretending otherwise. */
+         */
         buf->data = NULL;
         buf->len = 0;
         buf->cap = 0;

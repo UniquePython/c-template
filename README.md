@@ -22,11 +22,11 @@ useful when you want sanitizers without `TRACE`-level log spam.
 ### Checking for stubs
 
 ```sh
-make check-not-implemented
+make check-release-ready
 ```
 
-Greps `src/` and `include/` (excluding `template_log.h` itself) for any
-remaining `LOG_NOT_IMPLEMENTED(...)` calls and fails if any are found. Not
+Greps `src/` and `include/` (excluding `template_log.h` and `template_assert.h` itself) for any
+remaining `LOG_NOT_IMPLEMENTED(...)` and/or `ASSERT_DEBUG(...)` calls and fails if any are found. Not
 wired into CI or into any build target automatically — run it manually
 before you consider something done.
 

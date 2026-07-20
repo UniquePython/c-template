@@ -8,7 +8,7 @@
  * This is one real implementation of growth, bounds-checking, and
  * allocation, operating on `void *` storage plus an `elemSize` recorded
  * at creation time. It is not meant to be used directly at most call
- * sites -- see the (forthcoming) TEMPLATE_DEFINE_GROWABLE_BUFFER macro,
+ * sites -- see the TEMPLATE_DEFINE_GROWABLE_BUFFER macro,
  * which wraps this in a typed, compiler-checked shell per element type,
  * so the growth/overflow logic below is written exactly once and every
  * typed instantiation just forwards to it.
