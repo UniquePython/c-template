@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "template_log.h"
+#include "template_log_internal.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -10,17 +11,6 @@
 
 static bool gUseColorStdout = false;
 static bool gUseColorStderr = false;
-
-#define TEMPLATE_COLOR_RESET "\033[0m"
-#define TEMPLATE_COLOR_BOLD "\033[1m"
-#define TEMPLATE_COLOR_REVERSE "\033[7m"
-
-#define TEMPLATE_COLOR_RED "\033[31m"
-#define TEMPLATE_COLOR_MAGENTA "\033[35m"
-#define TEMPLATE_COLOR_GREEN "\033[32m"
-#define TEMPLATE_COLOR_YELLOW "\033[33m"
-#define TEMPLATE_COLOR_CYAN "\033[36m"
-#define TEMPLATE_COLOR_GRAY "\033[90m"
 
 #define TEMPLATE_COLOR_FATAL TEMPLATE_COLOR_REVERSE TEMPLATE_COLOR_RED
 #define TEMPLATE_COLOR_DEPRECATED TEMPLATE_COLOR_REVERSE TEMPLATE_COLOR_MAGENTA
@@ -38,7 +28,7 @@ void TemplateLogInit(void)
 // a secondary, dimmed annex meant for when the reader actually needs to jump
 // to the source, not for every-glance scanning. Pass file == NULL to omit
 // the location entirely (used by TemplateLogInfo).
-static void TemplateLogWrite(
+void TemplateLogWrite(
     FILE *restrict stream,
     bool useColor,
     bool flush,
@@ -71,7 +61,12 @@ static void TemplateLogWrite(
         fflush(stream);
 }
 
-#if VERBOSITY >= 1
+bool TemplateLogStderrColorEnabled(void)
+{
+    return gUseColorStderr;
+}
+
+#if TEMPLATE_VERBOSITY >= 1
 void TemplateLogFatal(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;
@@ -93,7 +88,7 @@ void TemplateLogNotImplemented(const char *file, i32 line, const char *func, con
 }
 #endif
 
-#if VERBOSITY >= 2
+#if TEMPLATE_VERBOSITY >= 2
 void TemplateLogError(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;
@@ -103,7 +98,7 @@ void TemplateLogError(const char *file, i32 line, const char *func, const char *
 }
 #endif
 
-#if VERBOSITY >= 3
+#if TEMPLATE_VERBOSITY >= 3
 void TemplateLogWarning(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;
@@ -121,7 +116,7 @@ void TemplateLogDeprecated(const char *file, i32 line, const char *func, const c
 }
 #endif
 
-#if VERBOSITY >= 4
+#if TEMPLATE_VERBOSITY >= 4
 void TemplateLogInfo(const char *fmt, ...)
 {
     va_list args;
@@ -131,7 +126,7 @@ void TemplateLogInfo(const char *fmt, ...)
 }
 #endif
 
-#if VERBOSITY >= 5
+#if TEMPLATE_VERBOSITY >= 5
 void TemplateLogDebug(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;
@@ -141,7 +136,7 @@ void TemplateLogDebug(const char *file, i32 line, const char *func, const char *
 }
 #endif
 
-#if VERBOSITY >= 6
+#if TEMPLATE_VERBOSITY >= 6
 void TemplateLogTrace(const char *file, i32 line, const char *func, const char *fmt, ...)
 {
     va_list args;

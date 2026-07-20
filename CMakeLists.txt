@@ -67,7 +67,8 @@ target_link_options(template PRIVATE
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:debug>:VERBOSITY=6>
+    $<$<CONFIG:debug>:TEMPLATE_VERBOSITY=6>
+    $<$<CONFIG:debug>:TEMPLATE_ASSERTIONS_DEBUG=1>
 )
 
 target_compile_options(template PRIVATE
@@ -88,7 +89,8 @@ target_link_options(template PRIVATE
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:dev>:VERBOSITY=5>
+    $<$<CONFIG:dev>:TEMPLATE_VERBOSITY=5>
+    $<$<CONFIG:dev>:TEMPLATE_ASSERTIONS_DEBUG=1>
 )
 
 target_compile_options(template PRIVATE
@@ -96,5 +98,6 @@ target_compile_options(template PRIVATE
 )
 
 target_compile_definitions(template PRIVATE
-    $<$<CONFIG:release>:VERBOSITY=3>
+    $<$<CONFIG:release>:TEMPLATE_VERBOSITY=3>
+    $<$<CONFIG:release>:TEMPLATE_ASSERTIONS_DEBUG=0>
 )
