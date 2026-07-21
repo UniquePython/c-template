@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_TIME_H
-#define TEMPLATE_TIME_H
+#ifndef TEMPLATE_TIME_H_
+#define TEMPLATE_TIME_H_
 
 #include "template_types.h"
 #include "template_error.h"
