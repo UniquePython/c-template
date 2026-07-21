@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_GROWABLE_BUFFER_H_
-#define TEMPLATE_GROWABLE_BUFFER_H_
+#ifndef TEMPLATE_DYN_ARRAY_H_
+#define TEMPLATE_DYN_ARRAY_H_
 
 /**
  * @file template_growable_buffer.h
@@ -8,20 +8,20 @@
  * This is one real implementation of growth, bounds-checking, and
  * allocation, operating on `void *` storage plus an `elemSize` recorded
  * at creation time. It is not meant to be used directly at most call
- * sites -- see the TEMPLATE_DEFINE_GROWABLE_BUFFER macro,
+ * sites -- see the TEMPLATE_DEFINE_DYN_ARRAY macro,
  * which wraps this in a typed, compiler-checked shell per element type,
  * so the growth/overflow logic below is written exactly once and every
  * typed instantiation just forwards to it.
  *
- * TemplateGrowableBuffer is opaque and always heap-allocated -- callers
- * only ever hold a `TemplateGrowableBuffer *`, obtained from
- * @ref TemplateGrowableBufferNew or @ref TemplateGrowableBufferTryNew,
- * and released via @ref TemplateGrowableBufferFree. There is no way to
+ * TemplateDynArray is opaque and always heap-allocated -- callers
+ * only ever hold a `TemplateDynArray *`, obtained from
+ * @ref TemplateDynArrayNew or @ref TemplateDynArrayTryNew,
+ * and released via @ref TemplateDynArrayFree. There is no way to
  * construct one on the stack, and no field of the struct is part of the
  * public API.
  *
  * Naming convention: every function that can fail for a reason the
- * caller can meaningfully react to is named TemplateGrowableBufferTryX
+ * caller can meaningfully react to is named TemplateDynArrayTryX
  * and reports failure via a `bool` return plus the standard
  * error-buffer convention (see `template_error.h`) -- consistent with
  * `template_memory.h`. Failures here are only ever "the outside world
@@ -33,7 +33,7 @@
  *
  * All growth arithmetic is overflow-checked via `template_checked_math.h`
  * before it ever reaches an allocator call, and all allocation goes
- * through `template_memory.h`'s Try-family, so a TemplateGrowableBuffer
+ * through `template_memory.h`'s Try-family, so a TemplateDynArray
  * can never be pushed into a state that silently wraps `cap * elemSize`
  * into a too-small allocation.
  *
@@ -55,7 +55,7 @@
 /**
  * @brief Opaque, type-erased growable array. See file-level docs.
  */
-typedef struct TemplateGrowableBuffer TemplateGrowableBuffer;
+typedef struct TemplateDynArray TemplateDynArray;
 
 /**
  * @brief Constructs an empty buffer for elements of `elemSize` bytes,
@@ -70,8 +70,8 @@ typedef struct TemplateGrowableBuffer TemplateGrowableBuffer;
  *         at this point either way -- only the (small, fixed-size)
  *         struct itself.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryNew(
-    TemplateGrowableBuffer **out,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryNew(
+    TemplateDynArray **out,
     usize elemSize,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
@@ -84,7 +84,7 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryNew(
  *         `FATAL` and aborts if `elemSize == 0` or the struct itself
  *         couldn't be allocated.
  */
-TEMPLATE_WARN_UNUSED_RESULT TemplateGrowableBuffer *TemplateGrowableBufferNew(usize elemSize);
+TEMPLATE_WARN_UNUSED_RESULT TemplateDynArray *TemplateDynArrayNew(usize elemSize);
 
 /**
  * @brief Ensures capacity for at least `newCap` elements, growing the
@@ -101,14 +101,14 @@ TEMPLATE_WARN_UNUSED_RESULT TemplateGrowableBuffer *TemplateGrowableBufferNew(us
  *         allocation/reallocation failed. See the file-level note on
  *         what state `buf` is left in after a failed growth.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryReserve(
-    TemplateGrowableBuffer *buf,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryReserve(
+    TemplateDynArray *buf,
     usize newCap,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
 /**
  * @brief Appends a copy of `*elem` (`elemSize` bytes, as given to
- *        @ref TemplateGrowableBufferNew) to the end of the buffer,
+ *        @ref TemplateDynArrayNew) to the end of the buffer,
  *        growing the backing allocation if necessary.
  *
  * @param[in,out] buf The buffer to push onto.
@@ -120,10 +120,10 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryReserve(
  *
  * Growth strategy: capacity doubles (starting from an initial capacity
  * of 1 on the first push into an empty buffer) whenever the buffer is
- * full, via @ref TemplateGrowableBufferTryReserve.
+ * full, via @ref TemplateDynArrayTryReserve.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryPush(
-    TemplateGrowableBuffer *buf,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryPush(
+    TemplateDynArray *buf,
     const void *elem,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
@@ -142,8 +142,8 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryPush(
  * a computed offset), so it is a boundary check, not an internal
  * invariant.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryGet(
-    const TemplateGrowableBuffer *restrict buf,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryGet(
+    const TemplateDynArray *restrict buf,
     usize index,
     void *restrict out);
 
@@ -153,7 +153,7 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryGet(
  * @param buf The buffer to query.
  * @return The current length. Always `0` for a `NULL` `buf`.
  */
-usize TemplateGrowableBufferLen(const TemplateGrowableBuffer *buf);
+usize TemplateDynArrayLen(const TemplateDynArray *buf);
 
 /**
  * @brief Removes and copies out the last element.
@@ -164,11 +164,11 @@ usize TemplateGrowableBufferLen(const TemplateGrowableBuffer *buf);
  * @return `true` on success, `false` if the buffer is empty.
  *
  * Does not shrink the backing allocation -- capacity is unchanged, only
- * length decreases. Use @ref TemplateGrowableBufferTryShrinkToFit to
+ * length decreases. Use @ref TemplateDynArrayTryShrinkToFit to
  * release unused capacity explicitly.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryPop(
-    TemplateGrowableBuffer *restrict buf,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryPop(
+    TemplateDynArray *restrict buf,
     void *restrict out);
 
 /**
@@ -182,11 +182,11 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryPop(
  * @return `true` on success, `false` if `index` is out of bounds.
  *
  * O(n) in the number of elements after `index`. See @ref
- * TemplateGrowableBufferTrySwapRemove for an O(1) alternative when
+ * TemplateDynArrayTrySwapRemove for an O(1) alternative when
  * element order doesn't need to be preserved.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryRemove(
-    TemplateGrowableBuffer *restrict buf,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryRemove(
+    TemplateDynArray *restrict buf,
     usize index,
     void *restrict out);
 
@@ -200,8 +200,8 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryRemove(
  *                 be `NULL` if the caller doesn't need the value.
  * @return `true` on success, `false` if `index` is out of bounds.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTrySwapRemove(
-    TemplateGrowableBuffer *restrict buf,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTrySwapRemove(
+    TemplateDynArray *restrict buf,
     usize index,
     void *restrict out);
 
@@ -211,7 +211,7 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTrySwapRemove(
  *
  * @param[in,out] buf The buffer to clear.
  */
-void TemplateGrowableBufferClear(TemplateGrowableBuffer *buf);
+void TemplateDynArrayClear(TemplateDynArray *buf);
 
 /**
  * @brief Shrinks the backing allocation to exactly fit the buffer's
@@ -228,8 +228,8 @@ void TemplateGrowableBufferClear(TemplateGrowableBuffer *buf);
  *         same way as any other failed TemplateTryRealloc call for
  *         consistency rather than special-cased.
  */
-TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryShrinkToFit(
-    TemplateGrowableBuffer *buf,
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryShrinkToFit(
+    TemplateDynArray *buf,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
 /**
@@ -240,9 +240,9 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateGrowableBufferTryShrinkToFit(
  *                     or `*buf` is already `NULL`, this is a no-op
  *                     (matching @ref TemplateFree's behavior, which
  *                     this is implemented directly in terms of) -- a
- *                     second `TemplateGrowableBufferFree(&buf)` call is
+ *                     second `TemplateDynArrayFree(&buf)` call is
  *                     a safe no-op rather than a double free.
  */
-void TemplateGrowableBufferFree(TemplateGrowableBuffer **buf);
+void TemplateDynArrayFree(TemplateDynArray **buf);
 
 #endif

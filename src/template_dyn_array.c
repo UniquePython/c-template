@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-struct TemplateGrowableBuffer
+struct TemplateDynArray
 {
     void *data;
     usize len;
@@ -14,8 +14,8 @@ struct TemplateGrowableBuffer
     usize elemSize;
 };
 
-bool TemplateGrowableBufferTryNew(
-    TemplateGrowableBuffer **out,
+bool TemplateDynArrayTryNew(
+    TemplateDynArray **out,
     usize elemSize,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
@@ -29,7 +29,7 @@ bool TemplateGrowableBufferTryNew(
         return false;
     }
 
-    TemplateGrowableBuffer *buf;
+    TemplateDynArray *buf;
     if (!TemplateTryAlloc((void **)&buf, sizeof *buf, errorBuffer))
         return false;
 
@@ -41,26 +41,26 @@ bool TemplateGrowableBufferTryNew(
     return true;
 }
 
-TemplateGrowableBuffer *TemplateGrowableBufferNew(usize elemSize)
+TemplateDynArray *TemplateDynArrayNew(usize elemSize)
 {
-    TemplateGrowableBuffer *buf;
+    TemplateDynArray *buf;
     TEMPLATE_NEW_ERROR_BUFFER(errorBuffer);
 
-    if (!TemplateGrowableBufferTryNew(&buf, elemSize, errorBuffer))
+    if (!TemplateDynArrayTryNew(&buf, elemSize, errorBuffer))
         LOG_FATAL("%s", errorBuffer);
 
     return buf;
 }
 
-bool TemplateGrowableBufferTryReserve(
-    TemplateGrowableBuffer *buf,
+bool TemplateDynArrayTryReserve(
+    TemplateDynArray *buf,
     usize newCap,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     if (buf == NULL)
         return false;
 
-    TEMPLATE_ASSERT(buf->elemSize != 0, "TemplateGrowableBuffer with elemSize 0 -- should be unreachable, TryNew rejects this at construction");
+    TEMPLATE_ASSERT(buf->elemSize != 0, "TemplateDynArray with elemSize 0 -- should be unreachable, TryNew rejects this at construction");
 
     if (newCap <= buf->cap)
         return true;
@@ -93,7 +93,7 @@ bool TemplateGrowableBufferTryReserve(
      * it never leaves the old block leaked, but it also means buf->data
      * is already gone by the time we'd report failure here. That's a
      * deliberate, documented tradeoff of TemplateTryRealloc itself, so
-     * TemplateGrowableBufferTryReserve inherits it rather than hiding
+     * TemplateDynArrayTryReserve inherits it rather than hiding
      * it: a failed reserve leaves buf with len/cap reset to reflect
      * that the storage is gone, not silently pretending the old,
      * smaller buffer is still usable. */
@@ -111,8 +111,8 @@ bool TemplateGrowableBufferTryReserve(
     return true;
 }
 
-bool TemplateGrowableBufferTryPush(
-    TemplateGrowableBuffer *buf,
+bool TemplateDynArrayTryPush(
+    TemplateDynArray *buf,
     const void *elem,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
@@ -124,11 +124,11 @@ bool TemplateGrowableBufferTryPush(
         usize newCap = (buf->cap == 0) ? 1 : buf->cap * 2;
 
         /* buf->cap * 2 above is intentionally not the overflow-checked
-         * path -- TemplateGrowableBufferTryReserve re-validates
+         * path -- TemplateDynArrayTryReserve re-validates
          * newCap * elemSize immediately below regardless, so a
          * doubling that wrapped usize would simply fail the reserve's
          * own overflow check rather than silently succeed. */
-        if (!TemplateGrowableBufferTryReserve(buf, newCap, errorBuffer))
+        if (!TemplateDynArrayTryReserve(buf, newCap, errorBuffer))
             return false;
     }
 
@@ -137,8 +137,8 @@ bool TemplateGrowableBufferTryPush(
     return true;
 }
 
-bool TemplateGrowableBufferTryGet(
-    const TemplateGrowableBuffer *restrict buf,
+bool TemplateDynArrayTryGet(
+    const TemplateDynArray *restrict buf,
     usize index,
     void *restrict out)
 {
@@ -152,7 +152,7 @@ bool TemplateGrowableBufferTryGet(
     return true;
 }
 
-usize TemplateGrowableBufferLen(const TemplateGrowableBuffer *buf)
+usize TemplateDynArrayLen(const TemplateDynArray *buf)
 {
     if (buf == NULL)
         return 0;
@@ -160,8 +160,8 @@ usize TemplateGrowableBufferLen(const TemplateGrowableBuffer *buf)
     return buf->len;
 }
 
-bool TemplateGrowableBufferTryPop(
-    TemplateGrowableBuffer *restrict buf,
+bool TemplateDynArrayTryPop(
+    TemplateDynArray *restrict buf,
     void *restrict out)
 {
     if (buf == NULL || buf->len == 0)
@@ -175,8 +175,8 @@ bool TemplateGrowableBufferTryPop(
     return true;
 }
 
-bool TemplateGrowableBufferTryRemove(
-    TemplateGrowableBuffer *restrict buf,
+bool TemplateDynArrayTryRemove(
+    TemplateDynArray *restrict buf,
     usize index,
     void *restrict out)
 {
@@ -201,8 +201,8 @@ bool TemplateGrowableBufferTryRemove(
     return true;
 }
 
-bool TemplateGrowableBufferTrySwapRemove(
-    TemplateGrowableBuffer *restrict buf,
+bool TemplateDynArrayTrySwapRemove(
+    TemplateDynArray *restrict buf,
     usize index,
     void *restrict out)
 {
@@ -228,7 +228,7 @@ bool TemplateGrowableBufferTrySwapRemove(
     return true;
 }
 
-void TemplateGrowableBufferClear(TemplateGrowableBuffer *buf)
+void TemplateDynArrayClear(TemplateDynArray *buf)
 {
     if (buf == NULL)
         return;
@@ -236,8 +236,8 @@ void TemplateGrowableBufferClear(TemplateGrowableBuffer *buf)
     buf->len = 0;
 }
 
-bool TemplateGrowableBufferTryShrinkToFit(
-    TemplateGrowableBuffer *buf,
+bool TemplateDynArrayTryShrinkToFit(
+    TemplateDynArray *buf,
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     if (buf == NULL)
@@ -258,7 +258,7 @@ bool TemplateGrowableBufferTryShrinkToFit(
     {
         /* Unreachable in practice -- buf->len <= buf->cap always, and
          * cap * elemSize already fit in usize when it was reserved. */
-        TEMPLATE_ASSERT(false, "buf->len * buf->elemSize overflowed usize during shrink -- implies a corrupted TemplateGrowableBuffer");
+        TEMPLATE_ASSERT(false, "buf->len * buf->elemSize overflowed usize during shrink -- implies a corrupted TemplateDynArray");
     }
 
     void *newData = buf->data;
@@ -280,7 +280,7 @@ bool TemplateGrowableBufferTryShrinkToFit(
     return true;
 }
 
-void TemplateGrowableBufferFree(TemplateGrowableBuffer **buf)
+void TemplateDynArrayFree(TemplateDynArray **buf)
 {
     if (buf == NULL || *buf == NULL)
         return;
