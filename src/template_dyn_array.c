@@ -137,6 +137,37 @@ bool TemplateDynArrayTryPush(
     return true;
 }
 
+bool TemplateDynArrayTryPushMany(
+    TemplateDynArray *buf,
+    const void *elems,
+    usize count,
+    char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
+{
+    if (buf == NULL || (elems == NULL && count != 0))
+        return false;
+
+    if (count == 0)
+        return true;
+
+    usize newLen;
+    if (!TemplateCheckedAddUsize(buf->len, count, &newLen))
+    {
+        if (!TemplateSetError(errorBuffer, "DynArray length overflow: " USIZE_FMT " + " USIZE_FMT, buf->len, count))
+            LOG_WARN("Error message was truncated");
+        return false;
+    }
+
+    if (newLen > buf->cap)
+    {
+        if (!TemplateDynArrayTryReserve(buf, newLen, errorBuffer))
+            return false;
+    }
+
+    memcpy((char *)buf->data + (buf->len * buf->elemSize), elems, count * buf->elemSize);
+    buf->len = newLen;
+    return true;
+}
+
 bool TemplateDynArrayTryGet(
     const TemplateDynArray *restrict buf,
     usize index,
@@ -158,6 +189,17 @@ usize TemplateDynArrayLen(const TemplateDynArray *buf)
         return 0;
 
     return buf->len;
+}
+
+bool TemplateDynArrayTryData(
+    const TemplateDynArray *restrict buf,
+    const void **restrict out)
+{
+    if (buf == NULL || out == NULL || buf->len == 0)
+        return false;
+
+    *out = buf->data;
+    return true;
 }
 
 bool TemplateDynArrayTryPop(

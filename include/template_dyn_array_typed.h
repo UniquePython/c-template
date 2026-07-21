@@ -86,6 +86,20 @@
         return TemplateDynArrayTryPush(self->raw, &elem, errorBuffer);                                 \
     }                                                                                                  \
                                                                                                        \
+    /* Appends count contiguous elements from elems in one bulk copy.                                  \
+     * See TemplateDynArrayTryPushMany. */                                                             \
+    TEMPLATE_WARN_UNUSED_RESULT static inline bool TemplateDynArray##Name##TryPushMany(                \
+        TemplateDynArray##Name *self,                                                                  \
+        const T *elems,                                                                                \
+        usize count,                                                                                   \
+        char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])                                         \
+    {                                                                                                  \
+        if (self == NULL)                                                                              \
+            return false;                                                                              \
+                                                                                                       \
+        return TemplateDynArrayTryPushMany(self->raw, elems, count, errorBuffer);                      \
+    }                                                                                                  \
+                                                                                                       \
     /* Copies the element at index into *out. See                                                      \
      * TemplateDynArrayTryGet. */                                                                      \
     TEMPLATE_WARN_UNUSED_RESULT static inline bool TemplateDynArray##Name##TryGet(                     \
@@ -106,6 +120,25 @@
             return 0;                                                                                  \
                                                                                                        \
         return TemplateDynArrayLen(self->raw);                                                         \
+    }                                                                                                  \
+                                                                                                       \
+    /* Retrieves a read-only, typed pointer to the buffer's internal                                   \
+     * contiguous storage. See TemplateDynArrayTryData -- same                                         \
+     * borrowed-pointer, invalidated-by-mutation, no-NULL-on-success                                   \
+     * contract applies here. */                                                                       \
+    TEMPLATE_WARN_UNUSED_RESULT static inline bool TemplateDynArray##Name##TryData(                    \
+        const TemplateDynArray##Name *restrict self,                                                   \
+        const T **restrict out)                                                                        \
+    {                                                                                                  \
+        if (self == NULL || out == NULL)                                                               \
+            return false;                                                                              \
+                                                                                                       \
+        const void *raw;                                                                               \
+        if (!TemplateDynArrayTryData(self->raw, &raw))                                                 \
+            return false;                                                                              \
+                                                                                                       \
+        *out = raw;                                                                                    \
+        return true;                                                                                   \
     }                                                                                                  \
                                                                                                        \
     /* Removes and copies out the last element. out may be NULL. See                                   \

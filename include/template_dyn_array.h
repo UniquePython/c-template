@@ -17,8 +17,11 @@
  * only ever hold a `TemplateDynArray *`, obtained from
  * @ref TemplateDynArrayNew or @ref TemplateDynArrayTryNew,
  * and released via @ref TemplateDynArrayFree. There is no way to
- * construct one on the stack, and no field of the struct is part of the
- * public API.
+ * construct one on the stack, and no field of the struct is directly
+ * accessible -- @ref TemplateDynArrayTryData is the one deliberate
+ * exception, exposing the storage's contents read-only (as a borrowed
+ * `const void *`, invalidated by any call that reallocates or frees the
+ * buffer) without exposing the struct layout itself.
  *
  * Naming convention: every function that can fail for a reason the
  * caller can meaningfully react to is named TemplateDynArrayTryX
@@ -128,6 +131,36 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryPush(
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
 
 /**
+ * @brief Appends `count` contiguous elements from `elems` to the end of
+ *        the buffer in one bulk copy, growing the backing allocation if
+ *        necessary.
+ *
+ * @param[in,out] buf The buffer to push onto.
+ * @param elems Pointer to the first of `count` contiguous elements
+ *              (`elemSize` bytes each, as given to @ref
+ *              TemplateDynArrayNew) to copy in. May be `NULL` only if
+ *              `count` is `0`.
+ * @param count Number of elements to copy from `elems`. `0` is a no-op
+ *              that always succeeds, matching @ref
+ *              TemplateDynArrayTryReserve's treatment of an
+ *              already-satisfied request.
+ * @param errorBuffer Error buffer to report failure into.
+ * @return `true` on success (including the `count == 0` no-op case),
+ *         `false` if `buf->len + count` overflows `usize`, or if growth
+ *         was needed and failed. See the file-level note on what state
+ *         `buf` is left in after a failed growth.
+ *
+ * Equivalent to calling @ref TemplateDynArrayTryPush `count` times, but
+ * grows at most once (to fit the entire batch) and copies in a single
+ * `memcpy` rather than one per element.
+ */
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryPushMany(
+    TemplateDynArray *buf,
+    const void *elems,
+    usize count,
+    char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE]);
+
+/**
  * @brief Copies the element at `index` into `*out`.
  *
  * @param buf The buffer to read from.
@@ -154,6 +187,35 @@ TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryGet(
  * @return The current length. Always `0` for a `NULL` `buf`.
  */
 usize TemplateDynArrayLen(const TemplateDynArray *buf);
+
+/**
+ * @brief Retrieves a read-only pointer to the buffer's internal
+ *        contiguous storage.
+ *
+ * @param buf The buffer to query.
+ * @param[out] out Set to a pointer to the first element on success.
+ *                 Left unmodified on failure.
+ * @return `true` on success, `false` if `buf` is `NULL` or empty
+ *         (`TemplateDynArrayLen(buf) == 0`).
+ *
+ * There is deliberately no case where this "succeeds" with `*out` set
+ * to `NULL` -- an empty buffer is treated the same as
+ * @ref TemplateDynArrayTryPop/@ref TemplateDynArrayTryGet treat it
+ * (a `false` return, nothing to give back), rather than making callers
+ * check the out param itself for `NULL` on top of checking the return
+ * value. If this returns `true`, `*out` is guaranteed non-`NULL` and
+ * points at `TemplateDynArrayLen(buf) * elemSize` valid, readable bytes.
+ *
+ * The returned pointer is read-only and borrowed -- it is invalidated by
+ * any call that can grow, shrink, or free the buffer (TryPush(Many),
+ * TryReserve, TryShrinkToFit, Free), same as any pointer obtained from
+ * `realloc` would be. Do not retain it across such a call, and do not
+ * write through it (it is `const void *` specifically so the compiler
+ * flags an attempt to, under `-Wcast-qual`).
+ */
+TEMPLATE_WARN_UNUSED_RESULT bool TemplateDynArrayTryData(
+    const TemplateDynArray *restrict buf,
+    const void **restrict out);
 
 /**
  * @brief Removes and copies out the last element.
