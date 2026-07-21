@@ -5,6 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef TEMPLATE_ASSERT_MSG_SIZE
+/*
+ * TEMPLATE_ASSERT_MSG_SIZE must be defined identically (or not at all) in every translation unit
+ * that either calls `TEMPLATE_ASSERT` or compiles `template_assert.c`, since it affects the compiled
+ * function body itself.
+ */
+#define TEMPLATE_ASSERT_MSG_SIZE 512
+#endif
+
 #define TEMPLATE_COLOR_ASSERT TEMPLATE_COLOR_REVERSE TEMPLATE_COLOR_RED
 
 /*
@@ -43,7 +52,7 @@ TEMPLATE_NORETURN void TemplateAssertFail(
     const char *file, i32 line, const char *func,
     const char *condStr, const char *fmt, ...)
 {
-    char message[1024];
+    char message[TEMPLATE_ASSERT_MSG_SIZE];
 
     va_list args;
     va_start(args, fmt);
