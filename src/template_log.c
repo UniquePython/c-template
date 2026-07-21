@@ -81,7 +81,7 @@ void TemplateLogNotImplemented(const char *restrict file, i32 line, const char *
 {
     va_list args;
     va_start(args, fmt);
-    TemplateLogWrite(stdout, gUseColorStdout, false, "NOT IMPLEMENTED", TEMPLATE_COLOR_NOT_IMPLEMENTED, file, line, func, fmt, args);
+    TemplateLogWrite(stderr, gUseColorStderr, true, "NOT IMPLEMENTED", TEMPLATE_COLOR_NOT_IMPLEMENTED, file, line, func, fmt, args);
     va_end(args);
 
     abort();
