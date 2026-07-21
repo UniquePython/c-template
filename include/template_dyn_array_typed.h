@@ -35,6 +35,7 @@
 #include "template_attributes.h"
 #include "template_error.h"
 #include "template_dyn_array.h"
+#include "template_log.h"
 #include "template_types.h"
 
 #define TEMPLATE_DEFINE_DYN_ARRAY(T, Name)                                                             \
@@ -50,7 +51,11 @@
         char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])                                         \
     {                                                                                                  \
         if (out == NULL)                                                                               \
+        {                                                                                              \
+            if (!TemplateSetError(errorBuffer, "out must not be NULL"))                                \
+                LOG_WARN("Error message was truncated");                                               \
             return false;                                                                              \
+        }                                                                                              \
                                                                                                        \
         return TemplateDynArrayTryNew(&out->raw, sizeof(T), errorBuffer);                              \
     }                                                                                                  \
@@ -69,7 +74,11 @@
         char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])                                         \
     {                                                                                                  \
         if (self == NULL)                                                                              \
+        {                                                                                              \
+            if (!TemplateSetError(errorBuffer, "self must not be NULL"))                                \
+                LOG_WARN("Error message was truncated");                                               \
             return false;                                                                              \
+        }                                                                                              \
                                                                                                        \
         return TemplateDynArrayTryReserve(self->raw, newCap, errorBuffer);                             \
     }                                                                                                  \
@@ -81,7 +90,11 @@
         char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])                                         \
     {                                                                                                  \
         if (self == NULL)                                                                              \
+        {                                                                                              \
+            if (!TemplateSetError(errorBuffer, "self must not be NULL"))                                \
+                LOG_WARN("Error message was truncated");                                               \
             return false;                                                                              \
+        }                                                                                              \
                                                                                                        \
         return TemplateDynArrayTryPush(self->raw, &elem, errorBuffer);                                 \
     }                                                                                                  \
@@ -95,7 +108,11 @@
         char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])                                         \
     {                                                                                                  \
         if (self == NULL)                                                                              \
+        {                                                                                              \
+            if (!TemplateSetError(errorBuffer, "self must not be NULL"))                                \
+                LOG_WARN("Error message was truncated");                                               \
             return false;                                                                              \
+        }                                                                                              \
                                                                                                        \
         return TemplateDynArrayTryPushMany(self->raw, elems, count, errorBuffer);                      \
     }                                                                                                  \
@@ -194,7 +211,11 @@
         char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])                                         \
     {                                                                                                  \
         if (self == NULL)                                                                              \
+        {                                                                                              \
+            if (!TemplateSetError(errorBuffer, "self must not be NULL"))                                \
+                LOG_WARN("Error message was truncated");                                               \
             return false;                                                                              \
+        }                                                                                              \
                                                                                                        \
         return TemplateDynArrayTryShrinkToFit(self->raw, errorBuffer);                                 \
     }                                                                                                  \

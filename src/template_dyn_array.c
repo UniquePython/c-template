@@ -20,7 +20,11 @@ bool TemplateDynArrayTryNew(
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     if (out == NULL)
+    {
+        if (!TemplateSetError(errorBuffer, "out must not be NULL"))
+            LOG_WARN("Error message was truncated");
         return false;
+    }
 
     if (elemSize == 0)
     {
@@ -58,7 +62,11 @@ bool TemplateDynArrayTryReserve(
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     if (buf == NULL)
+    {
+        if (!TemplateSetError(errorBuffer, "buf must not be NULL"))
+            LOG_WARN("Error message was truncated");
         return false;
+    }
 
     TEMPLATE_ASSERT(buf->elemSize != 0, "TemplateDynArray with elemSize 0 -- should be unreachable, TryNew rejects this at construction");
 
@@ -117,7 +125,11 @@ bool TemplateDynArrayTryPush(
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     if (buf == NULL || elem == NULL)
+    {
+        if (!TemplateSetError(errorBuffer, buf == NULL ? "buf must not be NULL" : "elem must not be NULL"))
+            LOG_WARN("Error message was truncated");
         return false;
+    }
 
     if (buf->len == buf->cap)
     {
@@ -144,7 +156,11 @@ bool TemplateDynArrayTryPushMany(
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     if (buf == NULL || (elems == NULL && count != 0))
+    {
+        if (!TemplateSetError(errorBuffer, buf == NULL ? "buf must not be NULL" : "elems must not be NULL when count != 0"))
+            LOG_WARN("Error message was truncated");
         return false;
+    }
 
     if (count == 0)
         return true;
@@ -283,7 +299,11 @@ bool TemplateDynArrayTryShrinkToFit(
     char errorBuffer[restrict TEMPLATE_ERROR_BUFFER_SIZE])
 {
     if (buf == NULL)
+    {
+        if (!TemplateSetError(errorBuffer, "buf must not be NULL"))
+            LOG_WARN("Error message was truncated");
         return false;
+    }
 
     if (buf->len == buf->cap)
         return true;
