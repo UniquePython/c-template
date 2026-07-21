@@ -2,7 +2,7 @@
 #define TEMPLATE_DYN_ARRAY_H_
 
 /**
- * @file template_growable_buffer.h
+ * @file template_dyn_array.h
  * @brief Generic, type-erased growable array (the storage core).
  *
  * This is one real implementation of growth, bounds-checking, and

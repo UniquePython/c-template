@@ -2,13 +2,13 @@
 #define TEMPLATE_DYN_ARRAY_TYPED_H_
 
 /**
- * @file template_growable_buffer_typed.h
+ * @file template_dyn_array_typed.h
  * @brief Generates a typed, compiler-checked wrapper around
  *        TemplateDynArray for a specific element type.
  *
  * Every function generated here is a thin, one-line forward to the
  * raw layer. There is no growth, bounds-checking, or allocation logic
- * here -- all of that is written exactly once in template_growable_buffer.c,
+ * here -- all of that is written exactly once in template_dyn_array.c,
  * and every instantiation below just inherits it.
  *
  * Usage:
@@ -34,7 +34,7 @@
 
 #include "template_attributes.h"
 #include "template_error.h"
-#include "template_growable_buffer.h"
+#include "template_dyn_array.h"
 #include "template_types.h"
 
 #define TEMPLATE_DEFINE_DYN_ARRAY(T, Name)                                                             \

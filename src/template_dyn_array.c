@@ -1,4 +1,4 @@
-#include "template_growable_buffer.h"
+#include "template_dyn_array.h"
 #include "template_assert.h"
 #include "template_checked_math.h"
 #include "template_log.h"
